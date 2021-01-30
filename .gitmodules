@@ -1,0 +1,6 @@
+[submodule "DCGD"]
+	path = DCGD
+	url = https://github.com/ChaymaZatout/DCGD
+[submodule "BASISR"]
+	path = BASISR
+	url = https://github.com/ChaymaZatout/BASISR
