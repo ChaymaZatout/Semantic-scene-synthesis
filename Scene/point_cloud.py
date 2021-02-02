@@ -18,11 +18,20 @@ def compute_occupied_space(depth, ground_img, fx_d=5.8262448167737955e+02, fy_d=
     return np.dstack(pcd)[0]
 
 
+def compute_ground_height(depth, ground_img, fy_d=5.8269103270988637e+02, cy_d=2.3844389626620386e+02):
+    indices = np.where(np.all(ground_img == [0, 255, 0], axis=-1))
+    yy = np.array(-(indices[0] - cy_d) * depth[indices] / fy_d)
+    filter_1 = np.percentile(yy, 25) < yy
+    filter_2 = yy < np.percentile(yy, 75)
+    return np.array(yy[np.where(filter_1 & filter_2)]).mean()
+
+
 def downsampling(pcd, voxel_size_mm=5):
     pcl = o3d.PointCloud()
     pcl.points = o3d.Vector3dVector(pcd)
     pcd = o3d.geometry.voxel_down_sample(pcl, voxel_size=voxel_size_mm)
-    return pcd.points
+    return np.array(pcd.points)
+
 
 def normalization(data):
     # unit sphere:
@@ -45,6 +54,11 @@ if __name__ == '__main__':
     start = time.time()
     pcd = compute_occupied_space(depth, ground)
     print(f"Computed pcd in {time.time() - start} s.")
+
+    # compute ground height:
+    start = time.time()
+    yy = compute_ground_height(depth, ground)
+    print(f"Ground height in {time.time() - start} s.")
 
     # down sampling:
     start = time.time()
