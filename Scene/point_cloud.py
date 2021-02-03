@@ -35,6 +35,7 @@ def downsampling(pcd, voxel_size_mm=5):
 
 def normalization(data):
     # unit sphere:
+    data = np.copy(data)
     centroid = np.mean(data, axis=0)
     data -= centroid
     furthest_distance = np.max(np.sqrt(np.sum(abs(data) ** 2, axis=-1)))
